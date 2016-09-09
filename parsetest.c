@@ -7,6 +7,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <assert.h>
 
 #include "parseutils.h"
 
@@ -21,7 +22,13 @@ void print_list(str_list *l){
 
 int main(){
 	char *s = ";=;=;=Hola;Mundo;Cruel;=;=;=", *r;
+	char *a = "Hola mundo";
+	char *b = "Hola";
 	str_list *l;
+
+	assert(str_has_prefix(a, b) == 1);
+	assert(str_has_prefix(b, a) == 0);
+	assert(str_has_prefix(a, a) == 1);
 
 	l = str_split(s, ";=");
     print_list(l);
