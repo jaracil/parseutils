@@ -36,6 +36,8 @@ char *str_slice(const char *str, int start, int end);
 char *str_slice_free(char *str, int start, int end);
 str_list *str_split_n(const char *str, const char *sep, size_t n);
 str_list *str_split(const char *str, const char *sep);
+str_list *str_split_n_safe(const char *str, const char *sep, size_t n);
+str_list *str_split_safe(const char *str, const char *sep);
 char *str_trim(const char *str, const char *strip);
 char *str_trim_free(char *str, const char *strip);
 char *str_ltrim(const char *str, const char *strip);

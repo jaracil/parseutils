@@ -106,14 +106,27 @@ char *str_slice_free(char *str, int start, int end){
 	return r;
 }
 
-str_list *str_split_n(const char *str, const char *sep, size_t n){
+static str_list *_str_split_n_safe(const char *str, const char *sep, size_t n, int safe){
+	char literal_delim = 0;
+	int into_literal = 0;
 	str_list *head = NULL, *p = NULL;
 	size_t l = strlen(str), ls = strlen(sep), chunks = 0, pos = 0, ini = 0;
 	if (n == 0) {
 		n = SIZE_MAX;
 	}
 	while (pos <= l){
-		if (str[pos] == 0 || (chunks < (n - 1) && strncmp(&str[pos], sep, ls) == 0)){
+		if (safe && (str[pos] == '"' || str[pos] == '\'')) {
+			if (!into_literal){
+				literal_delim = str[pos];
+				into_literal = 1;
+			} else {
+				if (str[pos] == literal_delim){
+					literal_delim = 0;
+					into_literal = 0;
+				}
+			}
+		}
+		if (str[pos] == 0 || (chunks < (n - 1) && !into_literal && strncmp(&str[pos], sep, ls) == 0)){
 			if (head == NULL) {
 				p = head = calloc(1, sizeof(str_list));
 			} else {
@@ -130,8 +143,20 @@ str_list *str_split_n(const char *str, const char *sep, size_t n){
 	return head;
 }
 
+str_list *str_split_n(const char *str, const char *sep, size_t n){
+	return _str_split_n_safe(str, sep, n, 0);
+}
+
+str_list *str_split_n_safe(const char *str, const char *sep, size_t n){
+	return _str_split_n_safe(str, sep, n, 1);
+}
+
 str_list *str_split(const char *str, const char *sep){
-	return str_split_n(str, sep, 0);
+	return _str_split_n_safe(str, sep, 0, 0);
+}
+
+str_list *str_split_safe(const char *str, const char *sep){
+	return _str_split_n_safe(str, sep, 0, 1);
 }
 
 char *str_trim(const char *str, const char *strip){
